@@ -110,4 +110,42 @@ class UserOrder {
 
         return false;
     }
+
+    public function getAllOrders() {
+        // Preparar la consulta SQL para obtener todas las órdenes
+        $query = "SELECT * FROM " . $this->table_name;
+    
+        // Preparar la declaración
+        $stmt = $this->conn->prepare($query);
+    
+        // Ejecutar la consulta
+        $stmt->execute();
+    
+        // Verificar si hay registros
+        if ($stmt->rowCount() > 0) {
+            // Crear un array para almacenar las órdenes
+            $ordersArray = array();
+    
+            // Recorrer los resultados y añadirlos al array
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                extract($row);
+    
+                $orderItem = array(
+                    "id" => $id,
+                    "ref" => $ref,
+                    "date" => $date,
+                    "total" => $total,
+                    "user_id" => $user_id
+                );
+    
+                array_push($ordersArray, $orderItem);
+            }
+    
+            return $ordersArray;
+        } else {
+            // No se encontraron órdenes
+            return "No orders found.";
+        }
+    }
+    
 }
