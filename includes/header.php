@@ -60,8 +60,8 @@
         <nav>
             <ul>
                 <li><a href="index.php">Home</a></li>
-                <li><a href="views/auth/register.php">Register</a></li>
-                <li><a href="views/auth/login.php">Login</a></li>
+                <li><a href="view/auth/register.php">Register</a></li>
+                <li><a href="view/auth/login.php">Login</a></li>
                 <li><a href="views/auth/profile.php">Profile</a></li>
                 <li> <a href="views/order/view_cart.php">Cart</a></li>
             </ul>

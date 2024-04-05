@@ -83,6 +83,7 @@
         <label for="pwd">Password:</label>
         <input type="password" name="pwd">
         <br>
+        <input type="hidden" name="action" value="login">
         <input type="submit" value="Login">
     </form>
     <a href="../../index.php">Home</a>

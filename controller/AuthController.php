@@ -1,75 +1,71 @@
 <?php
 
-require_once 'model/User.php'; // Asegúrate de incluir el camino correcto
+require_once 'model/User.php'; // Asegúrate de que la ruta al archivo del modelo User sea correcta.
 
 class AuthController {
     private $userModel;
+    private $user;
 
     public function __construct($db) {
         $this->userModel = new User($db);
     }
 
-    public function login($user_name, $password) {
-        $user = $this->userModel->getUserByUsername($user_name);
+    public function login($username, $password) {
+        $user = $this->userModel->findByUsername($username);
+        if (!$user) {
+            return false; // Usuario no encontrado
+        }
 
-        if ($user && password_verify($password, $user['pwd'])) {
-            // Iniciar sesión y almacenar el ID del usuario y su rol en la sesión
+        if (password_verify($password, $user['pwd'])) {
+            session_start();
             $_SESSION['user_id'] = $user['id'];
-            $_SESSION['user_role'] = $user['role_id'];
+            $_SESSION['user_name'] = $user['user_name'];
+            $_SESSION['role_id'] = $user['role_id'];
+            return true;
+        }
 
-            // Redirección basada en el rol del usuario
-            if ($user['role_id'] == 1) { // Admin
-                header("Location: admin/dashboard.php");
-                exit();
-            } else { // Otros roles, por ejemplo, un cliente
-                header("Location: profile.php");
-                exit();
-            }
+        return false; // La contraseña no coincide
+    }
+
+    public function register($userDetails) {
+        // Verificar si el correo electrónico ya está registrado
+        if ($this->userModel->findByEmail($userDetails['email'])) {
+            // Manejar el caso en que el correo electrónico ya esté en uso
+            return "This email is already registered.";
+        }
+
+        // Cifrar la contraseña
+        $userDetails['pwd'] = password_hash($userDetails['pwd'], PASSWORD_DEFAULT);
+
+        // Insertar el nuevo usuario
+        if ($this->userModel->create($userDetails)) {
+            // Registro exitoso
+            // Aquí podrías iniciar sesión automáticamente al usuario o redirigirlo a la página de inicio de sesión
+            return "Registration successful!";
         } else {
-            // Redireccionar con un mensaje de error
-            header("Location: login.php?error=Invalid username or password");
-            exit();
+            // Error al crear el usuario
+            return "An error occurred during registration.";
         }
     }
 
 
-    // Método para registrar un nuevo usuario
-    public function register($username, $email, $password, $fname, $lname) {
-        // Aquí agregarías lógica para validar los datos del formulario
-
-        $this->userModel->user_name = $username;
-        $this->userModel->email = $email;
-        $this->userModel->pwd = password_hash($password, PASSWORD_DEFAULT); // Hash de la contraseña
-        $this->userModel->fname = $fname;
-        $this->userModel->lname = $lname;
-
-        if ($this->userModel->create()) {
-            echo "Registro exitoso.";
-            // Redirige al usuario a la página de inicio de sesión
-        } else {
-            echo "Ocurrió un error al registrar el usuario.";
-            // Redirige de nuevo al formulario de registro con mensaje de error
-        }
+    public function logout() {
+        // Iniciar sesión
+        session_start();
+        // Destruir todas las variables de sesión
+        $_SESSION = array();
+        // Destruir la sesión
+        session_destroy();
+        // Redirigir a la página de login
+        header("Location: login.php");
+        exit();
     }
 
-    // Método para cambiar la contraseña
-    public function changePassword($userId, $oldPassword, $newPassword) {
-        $user = $this->userModel->getUserById($userId);
+    public function getUserId() {
+        return $this->user['id'] ?? null;
+    }
 
-        if ($user && password_verify($oldPassword, $user->pwd)) {
-            $this->userModel->id = $userId;
-            $this->userModel->pwd = password_hash($newPassword, PASSWORD_DEFAULT);
-            if ($this->userModel->updatePassword()) {
-                echo "Cambio de contraseña exitoso.";
-                // Redirige a la página de perfil o alguna otra página
-            } else {
-                echo "Error al cambiar la contraseña.";
-                // Manejo del error
-            }
-        } else {
-            echo "La contraseña actual no coincide.";
-            // Redirige de nuevo al formulario de cambio de contraseña con mensaje de error
-        }
+    public function getUserRole() {
+        return $this->user['role_id'] ?? null;
     }
 }
-?>

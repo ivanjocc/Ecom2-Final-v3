@@ -23,31 +23,29 @@ class User {
     }
 
     // Método para crear un nuevo usuario
-    public function create() {
+    public function create($userDetails) {
         $query = "INSERT INTO " . $this->table_name . " 
-                  (user_name, email, pwd, fname, lname, billing_address_id, shipping_address_id, token, role_id) 
+                  (user_name, email, pwd, role_id) 
                   VALUES 
-                  (:user_name, :email, :pwd, :fname, :lname, :billing_address_id, :shipping_address_id, :token, :role_id)";
-
+                  (:user_name, :email, :pwd, :role_id)";
+    
         $stmt = $this->conn->prepare($query);
-
+    
         // Limpieza de datos y asignación de parámetros
-        $stmt->bindParam(":user_name", $this->user_name);
-        $stmt->bindParam(":email", $this->email);
-        $stmt->bindParam(":pwd", password_hash($this->pwd, PASSWORD_DEFAULT)); // Hash de la contraseña
-        $stmt->bindParam(":fname", $this->fname);
-        $stmt->bindParam(":lname", $this->lname);
-        $stmt->bindParam(":billing_address_id", $this->billing_address_id);
-        $stmt->bindParam(":shipping_address_id", $this->shipping_address_id);
-        $stmt->bindParam(":token", $this->token);
-        $stmt->bindParam(":role_id", $this->role_id);
-
+        $stmt->bindParam(":user_name", $userDetails['user_name']);
+        $stmt->bindParam(":email", $userDetails['email']);
+        $stmt->bindParam(":pwd", password_hash($userDetails['pwd'], PASSWORD_DEFAULT)); // Hash de la contraseña
+        // Asegúrate de definir el role_id apropiadamente, por ejemplo, 2 para 'client'
+        $role_id = 2; // Este valor debería ser dinámico basado en tu lógica de roles
+        $stmt->bindParam(":role_id", $role_id);
+    
         if($stmt->execute()) {
-            return $this->conn->lastInsertId(); // Retorna el ID del usuario creado
+            return true;
         }
-
+    
         return false;
     }
+       
 
     // Método para leer todos los usuarios
     public function read() {
@@ -171,6 +169,28 @@ class User {
             // No se encontraron usuarios
             return "No users found.";
         }
+    }
+
+    public function findByEmail($email) {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE email = :email LIMIT 1";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":email", $email);
+        $stmt->execute();
+
+        if ($stmt->rowCount() > 0) {
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } else {
+            return null;
+        }
+    }
+
+    public function findByUsername($username) {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE user_name = :username";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':username', $username);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
     
 }

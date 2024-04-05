@@ -40,44 +40,75 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_cart'])) {
 ?>
 
 <?php
-// En tu punto de entrada o enrutador (index.php, por ejemplo)
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'login') {
-    require_once './controller/AuthController.php';
-    require_once './config/connexionDB.php';
 
-    $db = connexionDB::getConnection(); // Obtén tu conexión a la base de datos
-    $authController = new AuthController($db);
-    $authController->login($_POST['user_name'], $_POST['pwd']);
-}
+require_once './config/connexionDB.php'; // Asegúrate de que la ruta sea correcta
+require_once './controller/AuthController.php'; // Ajusta la ruta según sea necesario
+require_once './controller/UserController.php'; // Ajusta la ruta según sea necesario
 
-// En index.php o tu enrutador
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-    require_once '../path/to/UserController.php';
-    require_once '../path/to/connexionDB.php'; // Asume que esto devuelve una instancia PDO
+// Establece una conexión a la base de datos
+$db = connexionDB::getConnection();
 
-    $db = connexionDB::getConnection();
-    $userController = new UserController($db);
+// Inicia el controlador de autenticación
+$authController = new AuthController($db);
 
-    if ($_POST['action'] === 'register') {
-        $userData = [
-            'user_name' => $_POST['user_name'],
-            'email' => $_POST['email'],
-            'pwd' => password_hash($_POST['pwd'], PASSWORD_DEFAULT),
-            // otros campos necesarios para el usuario
-        ];
-        $addressData = [
-            'street_name' => $_POST['street_name'],
-            'street_nb' => $_POST['street_nb'],
-            'city' => $_POST['city'],
-            'province' => $_POST['province'],
-            'zip_code' => $_POST['zip_code'],
-            'country' => $_POST['country'],
-        ];
-        $userController->registerUser($userData, $addressData);
+// Inicia el controlador de usuario
+$userController = new UserController($db);
+
+// Manejar la acción de registro
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'register') {
+    $userDetails = [
+        'user_name' => $_POST['user_name'],
+        'email' => $_POST['email'],
+        'pwd' => $_POST['pwd'],
+        // Define el role_id aquí, si es necesario
+        'role_id' => 2, // Suponiendo que 2 es el role_id para 'client'
+    ];
+    
+    $registrationResult = $authController->register($userDetails);
+
+    // Continuación del manejo de la acción de registro
+    if ($registrationResult === "Registration successful!") {
+        // Si el registro fue exitoso, puedes optar por iniciar sesión automáticamente al usuario
+        // y redirigirlo a una página específica, como el dashboard o la página principal
+        // Por ejemplo, iniciar sesión:
+        $_SESSION['user_email'] = $userDetails['email']; // Asegúrate de también almacenar cualquier otra información de sesión necesaria
+        $_SESSION['user_role_id'] = $userDetails['role_id'];
+
+        // Redirigir a la página después del registro exitoso
+        header('Location: view/auth/login.php'); // Ajusta este destino según tu aplicación
+        exit();
+    } else {
+        // Si hubo un error durante el registro, muestra un mensaje de error
+        // o redirige al usuario de vuelta al formulario de registro con el mensaje de error.
+        
+        // Puedes almacenar el mensaje de error en la sesión para mostrarlo en la página de registro
+        $_SESSION['registration_error'] = $registrationResult;
+
+        // Redirigir de vuelta al formulario de registro
+        header('Location: view/auth/register.php'); // Asegúrate de que esta ruta sea correcta
+        exit();
+    }
+
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'login') {
+        $username = $_POST['user_name']; // Asegúrate de que este campo corresponde con tu formulario.
+        $password = $_POST['pwd'];
+    
+        if ($authController->login($username, $password)) {
+            // Login exitoso
+            header('Location: view/auth/profile.php'); // Ajusta esta ruta.
+            exit();
+        } else {
+            // Login fallido
+            $_SESSION['login_error'] = 'Invalid username or password';
+            header('Location: view/auth/login.php'); // Ajusta esta ruta.
+            exit();
+        }
     }
 }
 
 ?>
+
 
 
 
