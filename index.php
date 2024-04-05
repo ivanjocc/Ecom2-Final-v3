@@ -39,6 +39,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_cart'])) {
 }
 ?>
 
+<?php
+// En tu punto de entrada o enrutador (index.php, por ejemplo)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'login') {
+    require_once './controller/AuthController.php';
+    require_once './config/connexionDB.php';
+
+    $db = connexionDB::getConnection(); // Obtén tu conexión a la base de datos
+    $authController = new AuthController($db);
+    $authController->login($_POST['user_name'], $_POST['pwd']);
+}
+
+// En index.php o tu enrutador
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
+    require_once '../path/to/UserController.php';
+    require_once '../path/to/connexionDB.php'; // Asume que esto devuelve una instancia PDO
+
+    $db = connexionDB::getConnection();
+    $userController = new UserController($db);
+
+    if ($_POST['action'] === 'register') {
+        $userData = [
+            'user_name' => $_POST['user_name'],
+            'email' => $_POST['email'],
+            'pwd' => password_hash($_POST['pwd'], PASSWORD_DEFAULT),
+            // otros campos necesarios para el usuario
+        ];
+        $addressData = [
+            'street_name' => $_POST['street_name'],
+            'street_nb' => $_POST['street_nb'],
+            'city' => $_POST['city'],
+            'province' => $_POST['province'],
+            'zip_code' => $_POST['zip_code'],
+            'country' => $_POST['country'],
+        ];
+        $userController->registerUser($userData, $addressData);
+    }
+}
+
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

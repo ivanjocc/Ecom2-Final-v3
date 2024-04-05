@@ -22,29 +22,20 @@ class User {
         $this->conn = $db;
     }
 
-    // Método para crear un nuevo usuario
-    public function create() {
-        $query = "INSERT INTO " . $this->table_name . " (user_name, email, pwd, fname, lname, billing_address_id, shipping_address_id, token, role_id) VALUES (:user_name, :email, :pwd, :fname, :lname, :billing_address_id, :shipping_address_id, :token, :role_id)";
+    public function getUserByUsername($user_name) {
+        $query = "SELECT * FROM `user` WHERE `user_name` = :user_name";
 
         $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":user_name", $user_name);
+        $stmt->execute();
 
-        // Limpieza y vinculación de datos
-        $stmt->bindParam(":user_name", htmlspecialchars(strip_tags($this->user_name)));
-        $stmt->bindParam(":email", htmlspecialchars(strip_tags($this->email)));
-        $stmt->bindParam(":pwd", password_hash($this->pwd, PASSWORD_DEFAULT)); // Hashing de la contraseña
-        $stmt->bindParam(":fname", htmlspecialchars(strip_tags($this->fname)));
-        $stmt->bindParam(":lname", htmlspecialchars(strip_tags($this->lname)));
-        $stmt->bindParam(":billing_address_id", htmlspecialchars(strip_tags($this->billing_address_id)));
-        $stmt->bindParam(":shipping_address_id", htmlspecialchars(strip_tags($this->shipping_address_id)));
-        $stmt->bindParam(":token", htmlspecialchars(strip_tags($this->token))); // Considera cómo y cuándo generar este token
-        $stmt->bindParam(":role_id", htmlspecialchars(strip_tags($this->role_id)));
-
-        if($stmt->execute()) {
-            return true;
+        if ($stmt->rowCount() > 0) {
+            return $stmt->fetch(PDO::FETCH_ASSOC);
         }
 
-        return false;
+        return null;
     }
+
 
     // Método para leer todos los usuarios
     public function readAll() {

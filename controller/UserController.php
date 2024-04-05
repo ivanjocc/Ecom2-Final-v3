@@ -42,5 +42,38 @@ class UserController {
         $users = $this->userModel->readAll();
         include 'view/admin/manage_users.php'; // Asumiendo que tienes una vista para esto
     }
+
+    // En UserController.php
+    public function registerUser($userData, $addressData) {
+        // Crear la dirección primero
+        $address = new Address($this->db);
+        foreach ($addressData as $key => $value) {
+            $address->$key = $value;
+        }
+        $addressId = $address->create();
+
+        if ($addressId) {
+            // Ahora crear el usuario
+            $user = new User($this->db);
+            foreach ($userData as $key => $value) {
+                $user->$key = $value;
+            }
+            // Asume que tienes campos para billing_address_id y shipping_address_id en tu tabla de usuarios
+            $user->billing_address_id = $addressId;
+            $user->shipping_address_id = $addressId;
+
+            if ($user->create()) {
+                // Redirección o manejo de éxito
+                header("Location: profile.php");
+            } else {
+                // Manejo de error al crear usuario
+                echo "Error al registrar usuario";
+            }
+        } else {
+            // Manejo de error al crear dirección
+            echo "Error al registrar dirección";
+        }
+    }
+
 }
 ?>

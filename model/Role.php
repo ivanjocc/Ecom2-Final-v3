@@ -1,7 +1,7 @@
 <?php
 
 class Role {
-    // Propiedades que representan las columnas de la tabla.
+    // Propiedades de la clase que representan las columnas de la tabla.
     public $id;
     public $name;
     public $description;
@@ -17,13 +17,16 @@ class Role {
 
     // Método para crear un nuevo rol
     public function create() {
-        $query = "INSERT INTO " . $this->table_name . " (name, description) VALUES (:name, :description)";
+        $query = "INSERT INTO " . $this->table_name . " 
+                  (name, description) 
+                  VALUES 
+                  (:name, :description)";
 
         $stmt = $this->conn->prepare($query);
 
-        // Limpieza y vinculación de datos
-        $stmt->bindParam(":name", htmlspecialchars(strip_tags($this->name)));
-        $stmt->bindParam(":description", htmlspecialchars(strip_tags($this->description)));
+        // Limpieza de datos y asignación de parámetros
+        $stmt->bindParam(":name", $this->name);
+        $stmt->bindParam(":description", $this->description);
 
         if($stmt->execute()) {
             return true;
@@ -33,7 +36,7 @@ class Role {
     }
 
     // Método para leer todos los roles
-    public function readAll() {
+    public function read() {
         $query = "SELECT * FROM " . $this->table_name;
 
         $stmt = $this->conn->prepare($query);
@@ -42,24 +45,58 @@ class Role {
         return $stmt;
     }
 
-    // Método para leer un solo rol por su ID
-    public function readById($id) {
-        $query = "SELECT * FROM " . $this->table_name . " WHERE id = :id LIMIT 0,1";
+    // Método para leer un solo rol por ID
+    public function readOne($id) {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE id = :id";
 
         $stmt = $this->conn->prepare($query);
-
-        // Limpieza y vinculación de datos
-        $stmt->bindParam(":id", htmlspecialchars(strip_tags($id)));
-
+        $stmt->bindParam(":id", $id);
         $stmt->execute();
 
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // Set properties
+        // Asignar los valores a las propiedades del objeto
         $this->id = $row['id'];
         $this->name = $row['name'];
         $this->description = $row['description'];
     }
-}
 
-?>
+    // Método para actualizar un rol existente
+    public function update() {
+        $query = "UPDATE " . $this->table_name . " 
+                  SET 
+                      name = :name, 
+                      description = :description
+                  WHERE 
+                      id = :id";
+
+        $stmt = $this->conn->prepare($query);
+
+        // Limpieza de datos y asignación de parámetros
+        $stmt->bindParam(":id", $this->id);
+        $stmt->bindParam(":name", $this->name);
+        $stmt->bindParam(":description", $this->description);
+
+        if($stmt->execute()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    // Método para eliminar un rol
+    public function delete() {
+        $query = "DELETE FROM " . $this->table_name . " WHERE id = :id";
+
+        $stmt = $this->conn->prepare($query);
+
+        // Limpieza de datos y asignación de parámetros
+        $stmt->bindParam(":id", $this->id);
+
+        if($stmt->execute()) {
+            return true;
+        }
+
+        return false;
+    }
+}

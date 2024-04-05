@@ -9,19 +9,29 @@ class AuthController {
         $this->userModel = new User($db);
     }
 
-    // Método para iniciar sesión
-    public function login($username, $password) {
-        $user = $this->userModel->getUserByUsername($username);
+    public function login($user_name, $password) {
+        $user = $this->userModel->getUserByUsername($user_name);
 
-        if ($user && password_verify($password, $user->pwd)) {
-            // Establece las sesiones u otras lógicas necesarias
-            echo "Inicio de sesión exitoso.";
-            // Redirige a la página de perfil o dashboard
+        if ($user && password_verify($password, $user['pwd'])) {
+            // Iniciar sesión y almacenar el ID del usuario y su rol en la sesión
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_role'] = $user['role_id'];
+
+            // Redirección basada en el rol del usuario
+            if ($user['role_id'] == 1) { // Admin
+                header("Location: admin/dashboard.php");
+                exit();
+            } else { // Otros roles, por ejemplo, un cliente
+                header("Location: profile.php");
+                exit();
+            }
         } else {
-            echo "Credenciales incorrectas.";
-            // Redirige de nuevo al formulario de login con mensaje de error
+            // Redireccionar con un mensaje de error
+            header("Location: login.php?error=Invalid username or password");
+            exit();
         }
     }
+
 
     // Método para registrar un nuevo usuario
     public function register($username, $email, $password, $fname, $lname) {

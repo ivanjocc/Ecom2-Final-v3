@@ -1,7 +1,7 @@
 <?php
 
 class Address {
-    // Propiedades que representan las columnas de la tabla.
+    // Propiedades de la clase que representan las columnas de la tabla.
     public $id;
     public $street_name;
     public $street_nb;
@@ -21,19 +21,14 @@ class Address {
 
     // Método para crear una nueva dirección
     public function create() {
-        $query = "INSERT INTO " . $this->table_name . " (street_name, street_nb, city, province, zip_code, country) VALUES (:street_name, :street_nb, :city, :province, :zip_code, :country)";
-        
+        $query = "INSERT INTO " . $this->table_name . " 
+                  (street_name, street_nb, city, province, zip_code, country) 
+                  VALUES 
+                  (:street_name, :street_nb, :city, :province, :zip_code, :country)";
+
         $stmt = $this->conn->prepare($query);
 
-        // Limpieza de datos
-        $this->street_name=htmlspecialchars(strip_tags($this->street_name));
-        $this->street_nb=htmlspecialchars(strip_tags($this->street_nb));
-        $this->city=htmlspecialchars(strip_tags($this->city));
-        $this->province=htmlspecialchars(strip_tags($this->province));
-        $this->zip_code=htmlspecialchars(strip_tags($this->zip_code));
-        $this->country=htmlspecialchars(strip_tags($this->country));
-
-        // Vinculación de parámetros
+        // Limpieza de datos y asignación de parámetros
         $stmt->bindParam(":street_name", $this->street_name);
         $stmt->bindParam(":street_nb", $this->street_nb);
         $stmt->bindParam(":city", $this->city);
@@ -48,6 +43,60 @@ class Address {
         return false;
     }
 
-}
+    // Método para leer todas las direcciones
+    public function read() {
+        $query = "SELECT * FROM " . $this->table_name;
 
-?>
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+
+        return $stmt;
+    }
+
+    // Método para actualizar una dirección existente
+    public function update() {
+        $query = "UPDATE " . $this->table_name . " 
+                  SET 
+                      street_name = :street_name, 
+                      street_nb = :street_nb, 
+                      city = :city, 
+                      province = :province, 
+                      zip_code = :zip_code, 
+                      country = :country
+                  WHERE 
+                      id = :id";
+
+        $stmt = $this->conn->prepare($query);
+
+        // Limpieza de datos y asignación de parámetros
+        $stmt->bindParam(":id", $this->id);
+        $stmt->bindParam(":street_name", $this->street_name);
+        $stmt->bindParam(":street_nb", $this->street_nb);
+        $stmt->bindParam(":city", $this->city);
+        $stmt->bindParam(":province", $this->province);
+        $stmt->bindParam(":zip_code", $this->zip_code);
+        $stmt->bindParam(":country", $this->country);
+
+        if($stmt->execute()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    // Método para eliminar una dirección
+    public function delete() {
+        $query = "DELETE FROM " . $this->table_name . " WHERE id = :id";
+
+        $stmt = $this->conn->prepare($query);
+
+        // Limpieza de datos y asignación de parámetros
+        $stmt->bindParam(":id", $this->id);
+
+        if($stmt->execute()) {
+            return true;
+        }
+
+        return false;
+    }
+}
