@@ -1,7 +1,7 @@
 <?php
 
 class UserOrder {
-    // Propiedades que representan las columnas de la tabla.
+    // Propiedades de la clase que representan las columnas de la tabla.
     public $id;
     public $ref;
     public $date;
@@ -19,15 +19,74 @@ class UserOrder {
 
     // Método para crear un nuevo pedido
     public function create() {
-        $query = "INSERT INTO " . $this->table_name . " (ref, date, total, user_id) VALUES (:ref, :date, :total, :user_id)";
+        $query = "INSERT INTO " . $this->table_name . " 
+                  (ref, date, total, user_id) 
+                  VALUES 
+                  (:ref, :date, :total, :user_id)";
 
         $stmt = $this->conn->prepare($query);
 
-        // Limpieza y vinculación de datos
-        $stmt->bindParam(":ref", htmlspecialchars(strip_tags($this->ref)));
+        // Limpieza de datos y asignación de parámetros
+        $stmt->bindParam(":ref", $this->ref);
         $stmt->bindParam(":date", $this->date);
-        $stmt->bindParam(":total", htmlspecialchars(strip_tags($this->total)));
-        $stmt->bindParam(":user_id", htmlspecialchars(strip_tags($this->user_id)));
+        $stmt->bindParam(":total", $this->total);
+        $stmt->bindParam(":user_id", $this->user_id);
+
+        if($stmt->execute()) {
+            return $this->conn->lastInsertId(); // Retorna el ID del pedido creado
+        }
+
+        return false;
+    }
+
+    // Método para leer todos los pedidos de un usuario
+    public function readByUserId($user_id) {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE user_id = :user_id";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":user_id", $user_id);
+        $stmt->execute();
+
+        return $stmt;
+    }
+
+    // Método para leer un solo pedido por ID
+    public function readOne($id) {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE id = :id";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":id", $id);
+        $stmt->execute();
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Asignar los valores a las propiedades del objeto
+        $this->id = $row['id'];
+        $this->ref = $row['ref'];
+        $this->date = $row['date'];
+        $this->total = $row['total'];
+        $this->user_id = $row['user_id'];
+    }
+
+    // Método para actualizar un pedido existente
+    public function update() {
+        $query = "UPDATE " . $this->table_name . " 
+                  SET 
+                      ref = :ref, 
+                      date = :date, 
+                      total = :total, 
+                      user_id = :user_id
+                  WHERE 
+                      id = :id";
+
+        $stmt = $this->conn->prepare($query);
+
+        // Limpieza de datos y asignación de parámetros
+        $stmt->bindParam(":id", $this->id);
+        $stmt->bindParam(":ref", $this->ref);
+        $stmt->bindParam(":date", $this->date);
+        $stmt->bindParam(":total", $this->total);
+        $stmt->bindParam(":user_id", $this->user_id);
 
         if($stmt->execute()) {
             return true;
@@ -36,36 +95,19 @@ class UserOrder {
         return false;
     }
 
-    // Método para leer todos los pedidos
-    public function readAll() {
-        $query = "SELECT * FROM " . $this->table_name;
-
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute();
-
-        return $stmt;
-    }
-
-    // Método para leer un pedido específico por su ID
-    public function readById($id) {
-        $query = "SELECT * FROM " . $this->table_name . " WHERE id = :id LIMIT 0,1";
+    // Método para eliminar un pedido
+    public function delete() {
+        $query = "DELETE FROM " . $this->table_name . " WHERE id = :id";
 
         $stmt = $this->conn->prepare($query);
 
-        // Limpieza y vinculación de datos
-        $stmt->bindParam(":id", htmlspecialchars(strip_tags($id)));
+        // Limpieza de datos y asignación de parámetros
+        $stmt->bindParam(":id", $this->id);
 
-        $stmt->execute();
+        if($stmt->execute()) {
+            return true;
+        }
 
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        // Set properties
-        $this->id = $row['id'];
-        $this->ref = $row['ref'];
-        $this->date = $row['date'];
-        $this->total = $row['total'];
-        $this->user_id = $row['user_id'];
+        return false;
     }
 }
-
-?>
