@@ -54,9 +54,6 @@ CREATE TABLE IF NOT EXISTS `user` (
   `pwd` varchar(255) NOT NULL,
   `fname` varchar(50) NOT NULL,
   `lname` varchar(50) NOT NULL,
-  `billing_address_id` bigint(20) NOT NULL,
-  `shipping_address_id` bigint(20) NOT NULL,
-  `token` varchar(255) NOT NULL,
   `role_id` bigint(20) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_name` (`user_name`),
@@ -91,15 +88,15 @@ ALTER TABLE `user_order`
 INSERT INTO `role` (`name`, `description`) VALUES ('superadmin', 'Super Administrator');
 
 -- Insert super admin with password '12345678'
-INSERT INTO `user` (`user_name`, `email`, `pwd`, `fname`, `lname`, `billing_address_id`, `shipping_address_id`, `token`, `role_id`)
-VALUES ('superadmin', 'superadmin@admin.ca', '$2y$10$XbVZVwOxlwfv4iiSvMhZdOXiuWWlWhqWJIgZQ5aM5UiUyDhhcHKMa', 'Super', 'Admin', 1, 1, '', (SELECT `id` FROM `role` WHERE `name` = 'superadmin'));
+INSERT INTO `user` (`user_name`, `email`, `pwd`, `fname`, `lname`, `role_id`)
+VALUES ('superadmin', 'superadmin@admin.ca', '$2y$10$XbVZVwOxlwfv4iiSvMhZdOXiuWWlWhqWJIgZQ5aM5UiUyDhhcHKMa', 'Super', 'Admin', (SELECT `id` FROM `role` WHERE `name` = 'superadmin'));
 
 -- Add rol client
 INSERT INTO `role` (`name`, `description`) VALUES ('client', 'Client');
 
 -- Insert a client
-INSERT INTO `user` (`user_name`, `email`, `pwd`, `fname`, `lname`, `billing_address_id`, `shipping_address_id`, `token`, `role_id`)
-VALUES ('client', 'test@example.com', '$2y$10$WvUt5YLCr9E6H/sbCdtemeyfdK0xKdxd2cj1.pBpKa42QrIK46qpS', 'test', 'client', 2, 2, '', (SELECT `id` FROM `role` WHERE `name` = 'client'));
+INSERT INTO `user` (`user_name`, `email`, `pwd`, `fname`, `lname`, `role_id`)
+VALUES ('client', 'client@example.com', '$2y$10$WvUt5YLCr9E6H/sbCdtemeyfdK0xKdxd2cj1.pBpKa42QrIK46qpS', 'Client', 'Client', (SELECT `id` FROM `role` WHERE `name` = 'client'));
 
 -- Insert items par default
 INSERT INTO `product` (`name`, `quantity`, `price`, `img_url`, `description`)
