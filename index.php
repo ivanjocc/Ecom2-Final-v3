@@ -10,6 +10,7 @@ require_once './config/connexionDB.php';
 require_once './controller/RegisterController.php';
 require_once './controller/UserController.php';
 require_once './controller/LoginController.php';
+require_once './controller/LogoutController.php';
 
 
 // Establece una conexión a la base de datos
@@ -20,6 +21,7 @@ $registerController = new RegisterController($db);
 $userController = new UserController($db);
 $loginController = new LoginController($db);
 $userController = new UserController($db);
+$logoutController = new LogoutController();
 
 // Maneja la acción dependiendo del tipo de solicitud y de los parámetros POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -116,8 +118,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header("Location: view/auth/login.php");
             exit;
         }
-    }
-    
+    } elseif (isset($_POST['logout']) && $_POST['logout'] === 'logout') {
+        $logoutController->logout();
+    }    
 }
 
 ?>

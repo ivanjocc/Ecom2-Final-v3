@@ -106,6 +106,18 @@ connexionDB::disconnect();
         .error {
             color: red;
         }
+
+        button {
+            background: none!important;
+            border: none;
+            font-size: 20px;
+            padding: 0!important;
+            font-family: arial, sans-serif;
+            color: red;
+            /* text-decoration: underline; */
+            cursor: pointer;
+        }
+
     </style>
 
 </head>
@@ -132,7 +144,10 @@ connexionDB::disconnect();
         <input type="submit" value="Save">
     </form>
     <br>
-    <a href="../../index.php">Log out</a>
+    <form action="../../index.php" method="post">
+        <input type="hidden" name="logout" value="logout">
+        <button type="submit">Log out</button>
+    </form>
     <br>
     <a href="../../index.php">Home</a>
 </body>
