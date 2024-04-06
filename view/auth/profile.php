@@ -1,6 +1,6 @@
 <?php
 // Include the database configuration file
-require_once('../../config/database.php');
+require_once('../../config/connexionDB.php');
 
 // Assuming that user information is stored in a session after login
 session_start();
@@ -14,10 +14,16 @@ if (!isset($_SESSION['user_id'])) {
 // Get the user ID from the session
 $user_id = $_SESSION['user_id'];
 
-// Get user information from the database
-$sql = "SELECT * FROM `user` WHERE `id` = $user_id";
-$result = mysqli_query($conn, $sql);
-$user = mysqli_fetch_assoc($result);
+// Initialize the database connection
+$db = connexionDB::getConnection();
+
+// Get user information from the database using PDO
+$stmt = $db->prepare("SELECT * FROM `user` WHERE `id` = :user_id");
+$stmt->execute(['user_id' => $user_id]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+// Disconnect from the database
+connexionDB::disconnect();
 ?>
 
 <!DOCTYPE html>

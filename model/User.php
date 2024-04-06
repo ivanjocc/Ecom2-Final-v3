@@ -1,11 +1,10 @@
 <?php
 
 class User {
-    // Propiedades de la clase que representan las columnas de la tabla.
     public $id;
     public $user_name;
     public $email;
-    public $pwd; // Considera almacenar solo hashes de contraseñas
+    public $pwd;
     public $fname;
     public $lname;
     public $billing_address_id;
@@ -185,12 +184,19 @@ class User {
         }
     }
 
-    public function findByUsername($username) {
-        $query = "SELECT * FROM " . $this->table_name . " WHERE user_name = :username";
+    public function getUserByUsername($username) {
+        $query = "SELECT * FROM `user` WHERE `user_name` = :username";
         $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':username', $username);
+        $stmt->bindParam(':username', $username, PDO::PARAM_STR);
         $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+    
+        if ($stmt->rowCount() > 0) {
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } else {
+            return null;
+        }
     }
+    
+    
     
 }

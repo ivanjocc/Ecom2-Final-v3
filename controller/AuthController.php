@@ -1,31 +1,39 @@
 <?php
 
-require_once 'model/User.php'; // Asegúrate de que la ruta al archivo del modelo User sea correcta.
+require_once 'model/User.php';
 
 class AuthController {
     private $userModel;
-    private $user;
+    private $errorMessage;
 
     public function __construct($db) {
         $this->userModel = new User($db);
     }
 
     public function login($username, $password) {
-        $user = $this->userModel->findByUsername($username);
-        if (!$user) {
-            return false; // Usuario no encontrado
-        }
+        // Primero, obtén el usuario de la base de datos por su username
+        $user = $this->userModel->getUserByUsername($username);
+    
+        if ($user && password_verify($password, $user['pwd'])) {
+            // Asegúrate de que la sesión está iniciada
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+            }
 
-        if (password_verify($password, $user['pwd'])) {
-            session_start();
             $_SESSION['user_id'] = $user['id'];
-            $_SESSION['user_name'] = $user['user_name'];
-            $_SESSION['role_id'] = $user['role_id'];
-            return true;
+            $_SESSION['user_role'] = $user['role_id'];
+    
+            // Redirige al usuario según su rol
+            $redirectUrl = ($user['role_id'] == 1) ? "view/admin/dashboard.php" : "profile.php";
+            header("Location: $redirectUrl");
+            exit();
+        } else {
+            // Si la autenticación falla, configura un mensaje de error
+            $this->errorMessage = "Invalid username or password.";
+            return false; // Indica que el inicio de sesión no fue exitoso
         }
-
-        return false; // La contraseña no coincide
     }
+    
 
     public function register($userDetails) {
         // Verificar si el correo electrónico ya está registrado
@@ -61,11 +69,7 @@ class AuthController {
         exit();
     }
 
-    public function getUserId() {
-        return $this->user['id'] ?? null;
-    }
-
-    public function getUserRole() {
-        return $this->user['role_id'] ?? null;
+    public function getErrorMessage() {
+        return $this->errorMessage;
     }
 }

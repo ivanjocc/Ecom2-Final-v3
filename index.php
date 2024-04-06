@@ -1,116 +1,100 @@
 <?php
 session_start();
 
-// Initialize the cart if it doesn't exist
+// Inicializa el carrito si no existe
 if (!isset($_SESSION['cart'])) {
     $_SESSION['cart'] = [];
 }
 
-// Handling addition to the cart
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_cart'])) {
-    // Get product details and add to the cart
-    $productId = $_POST['product_id'];
-    $productName = $_POST['product_name'];
-    $productPrice = $_POST['product_price'];
-
-    // Check if the product is already in the cart
-    $productInCart = false;
-    foreach ($_SESSION['cart'] as &$cartItem) {
-        if ($cartItem['id'] === $productId) {
-            $cartItem['quantity'] += 1; // Increment the quantity
-            $productInCart = true;
-            break;
-        }
-    }
-    unset($cartItem); // Release the explicit reference
-
-    // If the product is not in the cart, add it
-    if (!$productInCart) {
-        $_SESSION['cart'][] = [
-            'id' => $productId,
-            'name' => $productName,
-            'price' => $productPrice,
-            'quantity' => 1,
-        ];
-    }
-
-    // Display an alert that the item has been added
-    echo '<script>alert("Item has been added to the cart!");</script>';
-}
-?>
-
-<?php
-
-require_once './config/connexionDB.php'; // Asegúrate de que la ruta sea correcta
-require_once './controller/AuthController.php'; // Ajusta la ruta según sea necesario
-require_once './controller/UserController.php'; // Ajusta la ruta según sea necesario
+require_once './config/connexionDB.php';
+require_once './controller/RegisterController.php';
+require_once './controller/UserController.php';
+require_once './controller/LoginController.php';
 
 // Establece una conexión a la base de datos
 $db = connexionDB::getConnection();
 
-// Inicia el controlador de autenticación
-$authController = new AuthController($db);
-
-// Inicia el controlador de usuario
+// Inicia los controladores
+$registerController = new RegisterController($db);
 $userController = new UserController($db);
+$loginController = new LoginController($db);
 
-// Manejar la acción de registro
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'register') {
-    $userDetails = [
-        'user_name' => $_POST['user_name'],
-        'email' => $_POST['email'],
-        'pwd' => $_POST['pwd'],
-        // Define el role_id aquí, si es necesario
-        'role_id' => 2, // Suponiendo que 2 es el role_id para 'client'
-    ];
+// Maneja la acción dependiendo del tipo de solicitud y de los parámetros POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['add_to_cart'])) {
+        // Get product details and add to the cart
+        $productId = $_POST['product_id'];
+        $productName = $_POST['product_name'];
+        $productPrice = $_POST['product_price'];
+
+        // Check if the product is already in the cart
+        $productInCart = false;
+        foreach ($_SESSION['cart'] as &$cartItem) {
+            if ($cartItem['id'] === $productId) {
+                $cartItem['quantity'] += 1; // Increment the quantity
+                $productInCart = true;
+                break;
+            }
+        }
+        unset($cartItem); // Release the explicit reference
+
+        // If the product is not in the cart, add it
+        if (!$productInCart) {
+            $_SESSION['cart'][] = [
+                'id' => $productId,
+                'name' => $productName,
+                'price' => $productPrice,
+                'quantity' => 1,
+            ];
+        }
+
+        // Display an alert that the item has been added
+        echo '<script>alert("Item has been added to the cart!");</script>';
+    } elseif (isset($_POST['action']) && $_POST['action'] === 'register') {
+        $userDetails = [
+            'user_name' => $_POST['user_name'],
+            'email' => $_POST['email'],
+            'pwd' => $_POST['pwd'],
+            'role_id' => 2, // Suponiendo que 2 es el role_id para 'client'
+        ];
     
-    $registrationResult = $authController->register($userDetails);
-
-    // Continuación del manejo de la acción de registro
-    if ($registrationResult === "Registration successful!") {
-        // Si el registro fue exitoso, puedes optar por iniciar sesión automáticamente al usuario
-        // y redirigirlo a una página específica, como el dashboard o la página principal
-        // Por ejemplo, iniciar sesión:
-        $_SESSION['user_email'] = $userDetails['email']; // Asegúrate de también almacenar cualquier otra información de sesión necesaria
-        $_SESSION['user_role_id'] = $userDetails['role_id'];
-
-        // Redirigir a la página después del registro exitoso
-        header('Location: view/auth/login.php'); // Ajusta este destino según tu aplicación
-        exit();
-    } else {
-        // Si hubo un error durante el registro, muestra un mensaje de error
-        // o redirige al usuario de vuelta al formulario de registro con el mensaje de error.
-        
-        // Puedes almacenar el mensaje de error en la sesión para mostrarlo en la página de registro
-        $_SESSION['registration_error'] = $registrationResult;
-
-        // Redirigir de vuelta al formulario de registro
-        header('Location: view/auth/register.php'); // Asegúrate de que esta ruta sea correcta
-        exit();
-    }
-
-
-    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'login') {
-        $username = $_POST['user_name']; // Asegúrate de que este campo corresponde con tu formulario.
+        $registrationResult = $registerController->register($userDetails);
+    
+        if ($registrationResult === "Registration successful!") {
+            $_SESSION['user_id'] = $userDetails['user_id']; // Asegúrate de obtener y asignar el ID del usuario
+            $_SESSION['user_email'] = $userDetails['email'];
+            $_SESSION['username'] = $userDetails['user_name'];
+            $_SESSION['user_role_id'] = $userDetails['role_id'];
+    
+            header('Location: view/auth/login.php');
+            exit;
+        } else {
+            $_SESSION['registration_error'] = $registrationResult;
+            header('Location: view/auth/register.php');
+            exit;
+        }
+    } elseif (isset($_POST['action']) && $_POST['action'] === 'login') {
+        $username = $_POST['user_name'];
         $password = $_POST['pwd'];
     
-        if ($authController->login($username, $password)) {
-            // Login exitoso
-            header('Location: view/auth/profile.php'); // Ajusta esta ruta.
-            exit();
+        $result = $loginController->login($username, $password);
+    
+        if ($result['success']) {
+            // Iniciar sesión del usuario
+            $_SESSION['user_id'] = $result['user_id'];
+            $_SESSION['username'] = $result['username'];
+            $_SESSION['role_id'] = $result['role_id'];
+            header('Location: view/auth/profile.php');
+            exit;
         } else {
-            // Login fallido
-            $_SESSION['login_error'] = 'Invalid username or password';
-            header('Location: view/auth/login.php'); // Ajusta esta ruta.
-            exit();
+            // Manejo de error de inicio de sesión
+            echo '<script>alert("'. $result['message'] .'");</script>';
+            // Redirigir al formulario de inicio de sesión o mostrar error
         }
     }
 }
 
 ?>
-
-
-
 
 <!DOCTYPE html>
 <html lang="en">

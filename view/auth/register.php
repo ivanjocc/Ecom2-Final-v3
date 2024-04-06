@@ -11,6 +11,12 @@
             background-color: #f4f4f4;
             margin: 0;
             padding: 0;
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;        
         }
 
         h2 {
@@ -19,12 +25,14 @@
         }
 
         form {
-            max-width: 400px;
-            margin: 20px auto;
-            padding: 20px;
             background-color: #fff;
-            border-radius: 5px;
+            padding: 20px;
+            border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
         }
 
         label {

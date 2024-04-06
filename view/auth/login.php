@@ -88,13 +88,6 @@
     </form>
     <a href="../../index.php">Home</a>
 
-    <?php
-    // Display error messages if they exist
-    if (isset($_GET['error'])) {
-        $error = $_GET['error'];
-        echo "<p class='error'>$error</p>";
-    }
-    ?>
 </body>
 
 </html>
