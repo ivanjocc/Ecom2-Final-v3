@@ -59,13 +59,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'user_name' => $_POST['user_name'],
             'email' => $_POST['email'],
             'pwd' => $_POST['pwd'],
-            'role_id' => 2, // Suponiendo que 2 es el role_id para 'client'
+            'role_id' => 2,
         ];
     
         $registrationResult = $registerController->register($userDetails);
     
         if ($registrationResult === "Registration successful!") {
-            $_SESSION['user_id'] = $userDetails['user_id']; // Asegúrate de obtener y asignar el ID del usuario
+            $_SESSION['user_id'] = $userDetails['user_id'];
             $_SESSION['user_email'] = $userDetails['email'];
             $_SESSION['username'] = $userDetails['user_name'];
             $_SESSION['user_role_id'] = $userDetails['role_id'];
@@ -88,14 +88,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['user_id'] = $result['user_id'];
             $_SESSION['username'] = $result['username'];
             $_SESSION['role_id'] = $result['role_id'];
-            header('Location: view/auth/profile.php');
+    
+            // Redirige según el role_id
+            if ($result['role_id'] == 1) { // Suponiendo que 1 sea el role_id para administradores
+                header('Location: view/admin/dashboard.php');
+            } elseif ($result['role_id'] == 2) { // Suponiendo que 2 sea el role_id para clientes
+                header('Location: view/auth/profile.php');
+            }
             exit;
         } else {
             // Manejo de error de inicio de sesión
             echo '<script>alert("'. $result['message'] .'");</script>';
             // Redirigir al formulario de inicio de sesión o mostrar error
         }
-    } elseif (isset($_POST['update_profile']) && $_POST['update_profile'] === 'update_profile') {
+    }
+    elseif (isset($_POST['update_profile']) && $_POST['update_profile'] === 'update_profile') {
         // Asegúrate de que el usuario esté logueado
         if (isset($_SESSION['user_id'])) {
             $user_id = $_SESSION['user_id'];

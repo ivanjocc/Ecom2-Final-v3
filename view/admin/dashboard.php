@@ -1,25 +1,3 @@
-<?php
-session_start();
-
-// Check if the user is authenticated
-if (!isset($_SESSION['user_id'])) {
-    // Redirect to the login page if the user is not authenticated
-    header("Location: ../auth/login.php");
-    exit();
-}
-
-// Get the user's role from the session
-$user_role = $_SESSION['user_role'];
-
-// Check if the user has the administrator role
-if ($user_role != 1) {
-    // Redirect to the homepage if the user is not an administrator
-    header("Location: ../../index.php");
-    exit();
-}
-
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 
