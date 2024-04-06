@@ -78,17 +78,17 @@
     <form action="../../index.php" method="post">
         <!-- Fields for the 'user' table -->
         <label for="user_name">Username:</label>
-        <input type="text" name="user_name">
+        <input type="text" name="user_name" required>
         <?php if (isset($_SESSION['errors']['user_name'])) echo "<p style='color:red'>{$_SESSION['errors']['user_name']}</p>"; ?>
         <br>
 
         <label for="email">Email:</label>
-        <input type="email" name="email">
+        <input type="email" name="email" required>
         <?php if (isset($_SESSION['errors']['email'])) echo "<p style='color:red'>{$_SESSION['errors']['email']}</p>"; ?>
         <br>
 
         <label for="pwd">Password:</label>
-        <input type="password" name="pwd">
+        <input type="password" name="pwd" required>
         <?php if (isset($_SESSION['errors']['pwd'])) echo "<p style='color:red'>{$_SESSION['errors']['pwd']}</p>"; ?>
         <br>
 
