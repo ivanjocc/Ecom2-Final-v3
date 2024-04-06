@@ -11,6 +11,7 @@ require_once './controller/RegisterController.php';
 require_once './controller/UserController.php';
 require_once './controller/LoginController.php';
 
+
 // Establece una conexión a la base de datos
 $db = connexionDB::getConnection();
 
@@ -18,6 +19,7 @@ $db = connexionDB::getConnection();
 $registerController = new RegisterController($db);
 $userController = new UserController($db);
 $loginController = new LoginController($db);
+$userController = new UserController($db);
 
 // Maneja la acción dependiendo del tipo de solicitud y de los parámetros POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -91,7 +93,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo '<script>alert("'. $result['message'] .'");</script>';
             // Redirigir al formulario de inicio de sesión o mostrar error
         }
+    } elseif (isset($_POST['update_profile']) && $_POST['update_profile'] === 'update_profile') {
+        // Asegúrate de que el usuario esté logueado
+        if (isset($_SESSION['user_id'])) {
+            $user_id = $_SESSION['user_id'];
+            $fname = $_POST['fname'];
+            $lname = $_POST['lname'];
+    
+            $result = $userController->updateUser($user_id, $fname, $lname);
+    
+            if ($result) {
+                // Actualización exitosa
+                header('Location: view/auth/profile.php?success=1');
+                exit;
+            } else {
+                // Error al actualizar
+                header('Location: view/auth/profile.php?error=1');
+                exit;
+            }
+        } else {
+            // Usuario no logueado, redirige al login
+            header("Location: view/auth/login.php");
+            exit;
+        }
     }
+    
 }
 
 ?>

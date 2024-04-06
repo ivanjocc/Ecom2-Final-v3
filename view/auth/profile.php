@@ -112,7 +112,7 @@ connexionDB::disconnect();
 
 <body>
     <h2>User Profile</h2>
-    <form action="process_update_profile.php" method="post" enctype="multipart/form-data">
+    <form action="../../index.php" method="post" enctype="multipart/form-data">
         <!-- Display user information and add form fields based on your database structure -->
         <img src="../../public/images/avatar.jpg" alt="Default Profile Picture" width="100">
         <br>
@@ -120,7 +120,7 @@ connexionDB::disconnect();
         <input type="text" name="user_name" value="<?php echo $user['user_name']; ?>" readonly>
         <br>
         <label for="email">Email:</label>
-        <input type="email" name="email" value="<?php echo $user['email']; ?>">
+        <input type="email" name="email" value="<?php echo $user['email']; ?>" readonly>
         <br>
         <label for="fname">First Name:</label>
         <input type="text" name="fname" value="<?php echo $user['fname']; ?>">
@@ -128,18 +128,11 @@ connexionDB::disconnect();
         <label for="lname">Last Name:</label>
         <input type="text" name="lname" value="<?php echo $user['lname']; ?>">
         <br>
+        <input type="hidden" name="update_profile" value="update_profile">
         <input type="submit" value="Save">
-        <?php
-        // Display error messages if they exist
-        if (isset($_GET['error'])) {
-            $error = $_GET['error'];
-            echo "<p class='error'>$error</p>";
-        }
-        ?>
     </form>
-    <a href="./change_password.php">Change password</a>
     <br>
-    <a href="./logout.php">Log out</a>
+    <a href="../../index.php">Log out</a>
     <br>
     <a href="../../index.php">Home</a>
 </body>
