@@ -34,80 +34,80 @@ $totalPrice = $cartController->getCartTotal();
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Cart</title>
 	<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #f4f4f4;
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+		body {
+			font-family: Arial, sans-serif;
+			background-color: #f4f4f4;
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
 
-    main {
-        max-width: 800px;
-        margin: 20px auto;
-        background-color: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
+		main {
+			max-width: 800px;
+			margin: 20px auto;
+			background-color: #fff;
+			padding: 20px;
+			border-radius: 8px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+		}
 
-    h1 {
-        background-color: #007BFF;
-        color: #fff;
-        padding: 10px;
-        text-align: center;
-        border-radius: 5px;
-    }
+		h1 {
+			background-color: #007BFF;
+			color: #fff;
+			padding: 10px;
+			text-align: center;
+			border-radius: 5px;
+		}
 
-    .cart-container {
-        margin-top: 20px;
-    }
+		.cart-container {
+			margin-top: 20px;
+		}
 
-    .cart-item {
-        background-color: #f9f9f9;
-        border: 1px solid #ddd;
-        padding: 10px;
-        margin-bottom: 10px;
-        border-radius: 5px;
-    }
+		.cart-item {
+			background-color: #f9f9f9;
+			border: 1px solid #ddd;
+			padding: 10px;
+			margin-bottom: 10px;
+			border-radius: 5px;
+		}
 
-    .cart-item p {
-        margin: 5px 0;
-        line-height: 1.6;
-    }
+		.cart-item p {
+			margin: 5px 0;
+			line-height: 1.6;
+		}
 
-    button {
-        background-color: #28a745;
-        color: #fff;
-        padding: 8px 16px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
+		button {
+			background-color: #28a745;
+			color: #fff;
+			padding: 8px 16px;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			transition: background-color 0.3s ease;
+		}
 
-    button:hover {
-        background-color: #218838;
-    }
+		button:hover {
+			background-color: #218838;
+		}
 
-    a {
-        display: block;
-        text-align: center;
-        margin-top: 10px;
-        color: #007BFF;
-        text-decoration: none;
-        transition: color 0.3s ease;
-    }
+		a {
+			display: block;
+			text-align: center;
+			margin-top: 10px;
+			color: #007BFF;
+			text-decoration: none;
+			transition: color 0.3s ease;
+		}
 
-    a:hover {
-        color: #0056b3;
-        text-decoration: underline;
-    }
+		a:hover {
+			color: #0056b3;
+			text-decoration: underline;
+		}
 
-    form {
-        margin-top: 15px;
-    }
-</style>
+		form {
+			margin-top: 15px;
+		}
+	</style>
 
 </head>
 
@@ -126,7 +126,7 @@ $totalPrice = $cartController->getCartTotal();
 			<p>Total Price: $<?= number_format($totalPrice, 2) ?></p>
 
 			<form action="confirm_order.php" method="post">
-				<!-- Campos ocultos y botón de confirmación -->
+				
 			</form>
 
 			<form action="" method="post">

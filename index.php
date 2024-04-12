@@ -54,7 +54,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ];
         }
 
-        // Display an alert that the item has been added
         echo '<script>alert("Item has been added to the cart!");</script>';
     } elseif (isset($_POST['action']) && $_POST['action'] === 'register') {
         $userDetails = [
