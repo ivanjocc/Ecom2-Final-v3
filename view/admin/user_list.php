@@ -6,7 +6,12 @@ require_once __DIR__ . '/../../config/connexionDB.php';
 $db = connexionDB::getConnection();
 $userController = new UserController($db);
 
-// Llamar método
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['user_id'])) {
+    $userController->deleteUser($_POST['user_id']);
+    header("Location: user_list.php");
+    exit();
+}
+
 $userController->listUsers();
 
 $users = $userController->users;
@@ -65,7 +70,8 @@ $users = $userController->users;
 	</style>
 </head>
 <body>
-	<h2>User List</h2>
+	<h2 style="padding-bottom: 10px;">User List</h2>
+	<a href="./dashboard.php" style="background-color: chocolate; color: #FFF; padding: 20px; text-decoration: none; text-align: center; font-weight: bold;">Return to Dashboard</a>
 	<table>
 		<tr>
 			<th>ID</th>
@@ -83,9 +89,9 @@ $users = $userController->users;
 			<td><?= htmlspecialchars($user['fname']) ?></td>
 			<td><?= htmlspecialchars($user['lname']) ?></td>
 			<td>
-				<form action="delete_user.php" method="POST">
+				<form action="user_list.php" method="POST">
 					<input type="hidden" name="user_id" value="<?= $user['id'] ?>">
-					<button type="submit" class="delete-btn">Delete</button>
+					<button type="submit" class="delete-btn" onclick="return confirm('Are you sure you want to delete this user?');">Delete</button>
 				</form>
 			</td>
 		</tr>

@@ -50,8 +50,27 @@
             transition: background-color 0.3s ease;
         }
 
+        button {
+            display: block;
+            width: 200px;
+            height: 50px;
+            font-size: 22px;
+            padding: 10px;
+            font-weight: bold;
+            background-color: #007BFF;
+            border: none;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+
         a:hover {
             background-color: #0056b3;
+        }
+
+        button:hover{
+            background-color: red;
         }
     </style>
 
@@ -60,13 +79,15 @@
 <body>
     <h2>Welcome to the Admin Dashboard</h2>
 
-    <!-- Navigation menu using an unordered list -->
     <ul>
         <li><a href="../../index.php">Home</a></li>
         <li><a href="add_product.php">Add Product</a></li>
         <li><a href="./user_list.php">User List</a></li>
         <li><a href="view_search_orders.php">Order List</a></li>
-        <li><a href="../auth/logout.php">Log out</a></li>
+        <form action="../../index.php" method="post">
+            <input type="hidden" name="logout" value="logout">
+            <button type="submit">Log out</button>
+        </form>
     </ul>
 
 </body>

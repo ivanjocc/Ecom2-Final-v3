@@ -35,5 +35,16 @@ class UserController {
             echo "Error: " . $e->getMessage();
         }
     }
+
+    public function deleteUser($userId) {
+        try {
+            $query = "DELETE FROM user WHERE id = :id";
+            $stmt = $this->db->prepare($query);
+            $stmt->bindParam(':id', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+    }
 }
 ?>
