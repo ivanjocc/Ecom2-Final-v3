@@ -1,6 +1,7 @@
 <?php
 
 class UserController {
+    public $users = [];
     private $db;
 
     public function __construct($db) {
@@ -21,6 +22,17 @@ class UserController {
         } catch (PDOException $e) {
             // Manejo del error
             return false;
+        }
+    }
+
+    public function listUsers() {
+        try {
+            $query = "SELECT id, user_name, email, fname, lname FROM user";
+            $stmt = $this->db->prepare($query);
+            $stmt->execute();
+            $this->users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
         }
     }
 }

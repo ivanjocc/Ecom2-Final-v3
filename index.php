@@ -20,8 +20,10 @@ $db = connexionDB::getConnection();
 $registerController = new RegisterController($db);
 $userController = new UserController($db);
 $loginController = new LoginController($db);
-$userController = new UserController($db);
 $logoutController = new LogoutController();
+
+// // Llamar metodo
+// $userController->listUsers();
 
 // Maneja la acción dependiendo del tipo de solicitud y de los parámetros POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -127,7 +129,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     } elseif (isset($_POST['logout']) && $_POST['logout'] === 'logout') {
         $logoutController->logout();
-    }    
+    } elseif (isset($_GET['action']) && $_GET['action'] === 'list_users') {
+        $userController->listUsers();
+    }
+    
 }
 
 ?>
