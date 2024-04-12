@@ -1,4 +1,7 @@
 <?php
+
+session_start();
+
 require_once __DIR__ . '/../../controller/ProductController.php';
 require_once __DIR__ . '/../../config/connexionDB.php';
 
@@ -16,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo $result;
     }
 } else {
-    echo "Access not allowed.";
+    // echo "Access not allowed.";
 }
 ?>
 

@@ -49,6 +49,31 @@ class ProductController {
             return "File is not an image.";
         }
     }
+
+	public function listProducts() {
+        $stmt = $this->db->prepare("SELECT id, name, price, quantity, description FROM product");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function deleteProduct($productId) {
+        $stmt = $this->db->prepare("DELETE FROM product WHERE id = ?");
+        $stmt->bindParam(1, $productId, PDO::PARAM_INT);
+        $stmt->execute();
+    }
+
+	public function listCatProducts() {
+        $stmt = $this->db->prepare("SELECT id, name, price, img_url FROM product WHERE category = 'Cat'");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getProductById($id) {
+        $stmt = $this->db->prepare("SELECT id, name, quantity, price, img_url, description FROM product WHERE id = ?");
+        $stmt->bindParam(1, $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch();
+    }
 }
 
 

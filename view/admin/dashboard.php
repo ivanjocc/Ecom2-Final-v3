@@ -4,11 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Admin Dashboard</title>
-    <!-- Include a CSS file (cursor.css) -->
     <link rel="stylesheet" href="../../public/css/cursor.css">
 
     <style>
-        /* Style for the page */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f4f4f4;
@@ -83,6 +81,7 @@
         <li><a href="../../index.php">Home</a></li>
         <li><a href="add_product.php">Add Product</a></li>
         <li><a href="./user_list.php">User List</a></li>
+        <!-- <li><a href="./show_product.php">Product List</a></li> -->
         <li><a href="view_search_orders.php">Order List</a></li>
         <form action="../../index.php" method="post">
             <input type="hidden" name="logout" value="logout">

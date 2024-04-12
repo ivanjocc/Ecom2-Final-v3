@@ -67,6 +67,19 @@ $users = $userController->users;
 			background: none;
 			cursor: pointer;
 		}
+
+		a {
+			background-color: chocolate;
+			color: #FFF;
+			padding: 20px;
+			text-decoration: none;
+			text-align: center;
+			font-weight: bold;
+			display: block;
+			margin: 20px auto;
+			width: 20%;
+			text-align: center;
+		}
 	</style>
 </head>
 <body>
