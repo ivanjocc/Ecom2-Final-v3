@@ -24,6 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $items = $cartController->getCartItems();
 $totalPrice = $cartController->getCartTotal();
+
+$_SESSION['totalPrice'] = $totalPrice;
+
+$totalPriceFormatted = number_format($totalPrice, 2, '.', '');
+
+
 ?>
 
 <!DOCTYPE html>
@@ -33,6 +39,8 @@ $totalPrice = $cartController->getCartTotal();
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Cart</title>
+	<link rel="stylesheet" href="../../public/css/cursor.css">
+	<script src="https://www.paypal.com/sdk/js?client-id=Ad7GHZJMasJhJX-ZwKz932cvIkkEKK596kKrR_D3KFJ6kDMMwhTavKinbmND340x8XsTh3_SV-i7-D1C"></script>
 	<style>
 		body {
 			font-family: Arial, sans-serif;
@@ -126,15 +134,50 @@ $totalPrice = $cartController->getCartTotal();
 			<p>Total Price: $<?= number_format($totalPrice, 2) ?></p>
 
 			<form action="confirm_order.php" method="post">
-				
+
 			</form>
 
 			<form action="" method="post">
 				<button type="submit" name="empty_cart">Empty Cart</button>
 			</form>
+
+			<div id="paypal-button-container" style="padding-top: 20px;"></div>
+
+			<a href="payment_success.php">Skip Payment and Confirm</a>
+
 			<a href="../../index.php">Home</a>
 		</div>
 	</main>
+	<!-- <script src="../../public/js/script.js"></script> -->
+
+	<script>
+		console.log("Total Price: <?= $totalPriceFormatted ?>");
+		paypal.Buttons({
+			createOrder: function(data, actions) {
+				return actions.order.create({
+					purchase_units: [{
+						amount: {
+							value: '<?= $totalPriceFormatted ?>'
+						}
+					}]
+				});
+			},
+			onApprove: function(data, actions) {
+				return actions.order.capture().then(function(details) {
+					// Esta es la línea que redirige sin verificación:
+					window.location.href = "payment_success.php";
+				});
+			},
+			onError: function(err) {
+				console.error('PayPal onError:', err);
+				alert('An error prevented the PayPal payment screen from loading.');
+			}
+		}).render('#paypal-button-container');
+	</script>
+
+
+
+
 </body>
 
 </html>
