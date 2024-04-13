@@ -24,7 +24,7 @@ Instructions for installing and configuring the project locally:
 	git clone https://github.com/ivanjocc/Ecom2-Final-v3
 2. Configure the database:
 - Import `config/database.sql` into your MySQL database management system.
-- Adjust the database credentials in `config/database.php` according to your local environment.
+- Adjust the database credentials in `config/connexionDB.php` according to your local environment.
 
 ## Usage
 
