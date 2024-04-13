@@ -24,4 +24,11 @@ class OrderController {
             return false;
         }
     }
+
+    public function getAllOrders() {
+        $sql = "SELECT o.id, o.ref, o.date, o.total, u.user_name FROM user_order o JOIN user u ON o.user_id = u.id ORDER BY o.date DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

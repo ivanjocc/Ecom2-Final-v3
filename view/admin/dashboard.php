@@ -82,7 +82,7 @@
         <li><a href="add_product.php">Add Product</a></li>
         <li><a href="./user_list.php">User List</a></li>
         <!-- <li><a href="./show_product.php">Product List</a></li> -->
-        <li><a href="view_search_orders.php">Order List</a></li>
+        <li><a href="show_orders.php">Order List</a></li>
         <form action="../../index.php" method="post">
             <input type="hidden" name="logout" value="logout">
             <button type="submit">Log out</button>
