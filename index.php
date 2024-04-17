@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Inicializa el carrito si no existe
 if (!isset($_SESSION['cart'])) {
     $_SESSION['cart'] = [];
 }
@@ -13,7 +12,6 @@ require_once './controller/LoginController.php';
 require_once './controller/LogoutController.php';
 
 
-// Establece una conexión a la base de datos
 $db = connexionDB::getConnection();
 
 // Inicia los controladores
@@ -240,19 +238,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div class="cat-container">
         <?php
-        // Get the list of cat images from the images directory
+    
+        $pdo = new PDO('mysql:host=localhost;dbname=petshop', 'root', '');
+
         $catImages = glob('public/img/*.jpg');
 
         foreach ($catImages as $catImage) {
-            // Get the filename (without the path)
+        
             $catName = pathinfo($catImage, PATHINFO_FILENAME);
+
+        
+            $stmt = $pdo->prepare("SELECT description FROM product WHERE name = ?");
+            $stmt->execute([$catName]);
+            $description = $stmt->fetchColumn();
+
             ?>
 
             <div class="cat-item">
                 <img src="<?= $catImage ?>" alt="<?= $catName ?>">
-                <p><?= $catName ?></p>
+                <strong><p><?= $catName ?></p></strong>
+                <p>Description: <br> <?= $description ?></p>
 
-                <!-- Add a form with hidden fields to send product details -->
                 <form method="post">
                     <input type="hidden" name="product_id" value="<?= $catName ?>">
                     <input type="hidden" name="product_name" value="<?= $catName ?>">
@@ -263,6 +269,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php } ?>
     </div>
 </main>
+
+
+
+
+
 
 <?php include 'includes/footer.php'; ?>
 
