@@ -1,27 +1,39 @@
 <?php
-    class connexionDB {
-        private static $dbHost = "localhost";
-        private static $dbName = "petshop";
-        private static $dbUsername = "root";
-        private static $dbUserPassword = "";
+// Définition de la classe connexionDB pour gérer la connexion à la base de données
+class connexionDB
+{
+    // Déclaration des propriétés statiques pour les détails de connexion
+    private static $dbHost = "localhost"; // Hôte de la base de données
+    private static $dbName = "petshop"; // Nom de la base de données
+    private static $dbUsername = "root"; // Nom d'utilisateur pour la base de données
+    private static $dbUserPassword = ""; // Mot de passe de l'utilisateur de la base de données
 
-        private static $connection = null;
+    // Variable pour conserver l'instance de la connexion
+    private static $connection = null;
 
-        public static function getConnection() {
-            if (null == self::$connection) {
-                try {
-                    self::$connection = new PDO("mysql:host=" . self::$dbHost . ";" . "dbname=" . self::$dbName, self::$dbUsername, self::$dbUserPassword);
-                    self::$connection->exec("set names utf8");
-                } catch (PDOException $exception) {
-                    die($exception->getMessage());
-                }
+    // Méthode pour obtenir une connexion à la base de données
+    public static function getConnection()
+    {
+        // Vérifie si la connexion existe déjà
+        if (null == self::$connection) {
+            try {
+                // Crée une nouvelle connexion PDO si aucune connexion n'existe
+                self::$connection = new PDO("mysql:host=" . self::$dbHost . ";" . "dbname=" . self::$dbName, self::$dbUsername, self::$dbUserPassword);
+                // Configure l'encodage des caractères en utf-8
+                self::$connection->exec("set names utf8");
+            } catch (PDOException $exception) {
+                // Arrête l'exécution et affiche le message d'erreur si la connexion échoue
+                die($exception->getMessage());
             }
-            return self::$connection;
         }
-
-        public static function disconnect() {
-            self::$connection = null;
-        }
+        // Retourne l'instance de la connexion
+        return self::$connection;
     }
 
-?>
+    // Méthode pour déconnecter la base de données
+    public static function disconnect()
+    {
+        // Réinitialise la connexion à null
+        self::$connection = null;
+    }
+}

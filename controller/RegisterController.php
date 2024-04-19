@@ -1,36 +1,40 @@
 <?php
 
-class RegisterController {
-    private $db;
+// Définition de la classe RegisterController pour gérer les inscriptions d'utilisateurs
+class RegisterController
+{
+    private $db; // Variable pour stocker la connexion à la base de données
 
-    public function __construct($db) {
+    // Constructeur de la classe qui initialise la connexion à la base de données
+    public function __construct($db)
+    {
         $this->db = $db;
     }
 
-    public function register($userDetails) {
-        $email = $userDetails['email'];
-        $username = $userDetails['user_name'];
-        $password = $userDetails['pwd'];
-        $role_id = $userDetails['role_id'];
+    // Méthode pour enregistrer un nouvel utilisateur
+    public function register($userDetails)
+    {
+        $email = $userDetails['email']; // Récupération de l'email depuis les détails de l'utilisateur
+        $username = $userDetails['user_name']; // Récupération du nom d'utilisateur
+        $password = $userDetails['pwd']; // Récupération du mot de passe
+        $role_id = $userDetails['role_id']; // Récupération de l'identifiant du rôle
 
-        // Verificar si el correo electrónico o el nombre de usuario ya están registrados
+        // Vérifier si l'email ou le nom d'utilisateur sont déjà utilisés
         $checkQuery = "SELECT * FROM user WHERE email = :email OR user_name = :username";
-
         $stmt = $this->db->prepare($checkQuery);
         $stmt->bindParam(':email', $email);
         $stmt->bindParam(':username', $username);
         $stmt->execute();
 
         if ($stmt->rowCount() > 0) {
-            return "This email or username is already registered.";
+            return "Cet email ou nom d'utilisateur est déjà enregistré.";
         }
 
-        // Cifrar la contraseña
+        // Chiffrer le mot de passe
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-        // Insertar el nuevo usuario
+        // Insérer le nouvel utilisateur
         $insertQuery = "INSERT INTO user (user_name, email, pwd, role_id) VALUES (:username, :email, :pwd, :role_id)";
-
         $stmt = $this->db->prepare($insertQuery);
         $stmt->bindParam(':username', $username);
         $stmt->bindParam(':email', $email);
@@ -38,10 +42,9 @@ class RegisterController {
         $stmt->bindParam(':role_id', $role_id);
 
         if ($stmt->execute()) {
-            return "Registration successful!";
+            return "Inscription réussie !";
         } else {
-            return "An error occurred during registration.";
+            return "Une erreur est survenue lors de l'inscription.";
         }
     }
 }
-?>

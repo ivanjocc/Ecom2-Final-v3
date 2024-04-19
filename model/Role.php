@@ -1,68 +1,70 @@
 <?php
 
-class Role {
-    // Propiedades de la clase que representan las columnas de la tabla.
+class Role
+{
+    // Propriétés représentant les colonnes de la table.
     public $id;
     public $name;
     public $description;
 
-    // Conexión a la base de datos
+    // Connexion à la base de données
     private $conn;
     private $table_name = "role";
 
-    // Constructor que recibe la conexión a la base de datos
-    public function __construct($db) {
+    // Constructeur recevant la connexion à la base de données
+    public function __construct($db)
+    {
         $this->conn = $db;
     }
 
-    // Método para crear un nuevo rol
-    public function create() {
+    // Méthode pour créer un nouveau rôle
+    public function create()
+    {
         $query = "INSERT INTO " . $this->table_name . " 
                   (name, description) 
                   VALUES 
                   (:name, :description)";
 
         $stmt = $this->conn->prepare($query);
-
-        // Limpieza de datos y asignación de parámetros
+        // Nettoyage des données et assignation des paramètres
         $stmt->bindParam(":name", $this->name);
         $stmt->bindParam(":description", $this->description);
 
-        if($stmt->execute()) {
+        if ($stmt->execute()) {
             return true;
         }
 
         return false;
     }
 
-    // Método para leer todos los roles
-    public function read() {
+    // Méthode pour lire tous les rôles
+    public function read()
+    {
         $query = "SELECT * FROM " . $this->table_name;
-
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
 
         return $stmt;
     }
 
-    // Método para leer un solo rol por ID
-    public function readOne($id) {
+    // Méthode pour lire un seul rôle par ID
+    public function readOne($id)
+    {
         $query = "SELECT * FROM " . $this->table_name . " WHERE id = :id";
-
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":id", $id);
         $stmt->execute();
 
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        // Asignar los valores a las propiedades del objeto
+        // Assignation des valeurs aux propriétés de l'objet
         $this->id = $row['id'];
         $this->name = $row['name'];
         $this->description = $row['description'];
     }
 
-    // Método para actualizar un rol existente
-    public function update() {
+    // Méthode pour mettre à jour un rôle existant
+    public function update()
+    {
         $query = "UPDATE " . $this->table_name . " 
                   SET 
                       name = :name, 
@@ -71,29 +73,27 @@ class Role {
                       id = :id";
 
         $stmt = $this->conn->prepare($query);
-
-        // Limpieza de datos y asignación de parámetros
+        // Nettoyage des données et assignation des paramètres
         $stmt->bindParam(":id", $this->id);
         $stmt->bindParam(":name", $this->name);
         $stmt->bindParam(":description", $this->description);
 
-        if($stmt->execute()) {
+        if ($stmt->execute()) {
             return true;
         }
 
         return false;
     }
 
-    // Método para eliminar un rol
-    public function delete() {
+    // Méthode pour supprimer un rôle
+    public function delete()
+    {
         $query = "DELETE FROM " . $this->table_name . " WHERE id = :id";
-
         $stmt = $this->conn->prepare($query);
-
-        // Limpieza de datos y asignación de parámetros
+        // Nettoyage des données et assignation du paramètre
         $stmt->bindParam(":id", $this->id);
 
-        if($stmt->execute()) {
+        if ($stmt->execute()) {
             return true;
         }
 

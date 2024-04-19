@@ -1,6 +1,8 @@
 <?php
 
-class User {
+class User
+{
+    // Propriétés représentant les colonnes de la base de données.
     public $id;
     public $user_name;
     public $email;
@@ -12,61 +14,50 @@ class User {
     public $token;
     public $role_id;
 
-    // Conexión a la base de datos
+    // Connexion à la base de données.
     private $conn;
     private $table_name = "user";
 
-    // Constructor que recibe la conexión a la base de datos
-    public function __construct($db) {
+    // Constructeur avec connexion à la base de données.
+    public function __construct($db)
+    {
         $this->conn = $db;
     }
 
-    // Método para crear un nuevo usuario
-    public function create($userDetails) {
-        $query = "INSERT INTO " . $this->table_name . " 
-                  (user_name, email, pwd, role_id) 
-                  VALUES 
-                  (:user_name, :email, :pwd, :role_id)";
-    
+    // Méthode pour créer un nouvel utilisateur.
+    public function create($userDetails)
+    {
+        $query = "INSERT INTO " . $this->table_name .
+            " (user_name, email, pwd, role_id) 
+                  VALUES (:user_name, :email, :pwd, :role_id)";
         $stmt = $this->conn->prepare($query);
-    
-        // Limpieza de datos y asignación de parámetros
+        // Nettoyage et assignation des paramètres.
         $stmt->bindParam(":user_name", $userDetails['user_name']);
         $stmt->bindParam(":email", $userDetails['email']);
-        $stmt->bindParam(":pwd", password_hash($userDetails['pwd'], PASSWORD_DEFAULT)); // Hash de la contraseña
-        // Asegúrate de definir el role_id apropiadamente, por ejemplo, 2 para 'client'
-        $role_id = 2; // Este valor debería ser dinámico basado en tu lógica de roles
-        $stmt->bindParam(":role_id", $role_id);
-    
-        if($stmt->execute()) {
-            return true;
-        }
-    
-        return false;
+        $stmt->bindParam(":pwd", password_hash($userDetails['pwd'], PASSWORD_DEFAULT));
+        $stmt->bindParam(":role_id", $userDetails['role_id']);
+
+        return $stmt->execute();
     }
-       
 
-    // Método para leer todos los usuarios
-    public function read() {
+    // Méthode pour lire tous les utilisateurs.
+    public function read()
+    {
         $query = "SELECT * FROM " . $this->table_name;
-
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
-
         return $stmt;
     }
 
-    // Método para leer un solo usuario por ID
-    public function readOne($id) {
+    // Méthode pour lire un utilisateur par ID.
+    public function readOne($id)
+    {
         $query = "SELECT * FROM " . $this->table_name . " WHERE id = :id";
-
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":id", $id);
         $stmt->execute();
-
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        // Asignar los valores a las propiedades del objeto
+        // Assignation des propriétés.
         $this->id = $row['id'];
         $this->user_name = $row['user_name'];
         $this->email = $row['email'];
@@ -79,29 +70,20 @@ class User {
         $this->role_id = $row['role_id'];
     }
 
-    // Método para actualizar un usuario existente
-    public function update() {
-        $query = "UPDATE " . $this->table_name . " 
-                  SET 
-                      user_name = :user_name, 
-                      email = :email, 
-                      pwd = :pwd, 
-                      fname = :fname, 
-                      lname = :lname, 
-                      billing_address_id = :billing_address_id, 
-                      shipping_address_id = :shipping_address_id, 
-                      token = :token, 
-                      role_id = :role_id
-                  WHERE 
-                      id = :id";
-
+    // Méthode pour mettre à jour un utilisateur existant.
+    public function update()
+    {
+        $query = "UPDATE " . $this->table_name .
+            " SET user_name = :user_name, email = :email, pwd = :pwd, 
+                       fname = :fname, lname = :lname, billing_address_id = :billing_address_id, 
+                       shipping_address_id = :shipping_address_id, token = :token, role_id = :role_id
+                  WHERE id = :id";
         $stmt = $this->conn->prepare($query);
-
-        // Limpieza de datos y asignación de parámetros
+        // Nettoyage et assignation des paramètres.
         $stmt->bindParam(":id", $this->id);
         $stmt->bindParam(":user_name", $this->user_name);
         $stmt->bindParam(":email", $this->email);
-        $stmt->bindParam(":pwd", $this->pwd); // Asegúrate de hashear la contraseña si ha cambiado
+        $stmt->bindParam(":pwd", $this->pwd);
         $stmt->bindParam(":fname", $this->fname);
         $stmt->bindParam(":lname", $this->lname);
         $stmt->bindParam(":billing_address_id", $this->billing_address_id);
@@ -109,48 +91,37 @@ class User {
         $stmt->bindParam(":token", $this->token);
         $stmt->bindParam(":role_id", $this->role_id);
 
-        if($stmt->execute()) {
-            return true;
-        }
-
-        return false;
+        return $stmt->execute();
     }
 
-    // Método para eliminar un usuario
-    public function delete() {
+    // Méthode pour supprimer un utilisateur.
+    public function delete()
+    {
         $query = "DELETE FROM " . $this->table_name . " WHERE id = :id";
-
         $stmt = $this->conn->prepare($query);
-
-        // Limpieza de datos y asignación de parámetros
         $stmt->bindParam(":id", $this->id);
-
-        if($stmt->execute()) {
-            return true;
-        }
-
-        return false;
+        return $stmt->execute();
     }
-
-    public function getAllUsers() {
-        // Preparar la consulta SQL
+    public function getAllUsers()
+    {
+        // Préparation de la requête SQL
         $query = "SELECT id, user_name, email, fname, lname, role_id FROM " . $this->table_name;
-    
-        // Preparar la declaración
+
+        // Préparation de l'instruction
         $stmt = $this->conn->prepare($query);
-    
-        // Ejecutar la consulta
+
+        // Exécution de la requête
         $stmt->execute();
-    
-        // Verificar si hay registros
-        if($stmt->rowCount() > 0) {
-            // Crear un array para almacenar los usuarios
+
+        // Vérification de la présence de données
+        if ($stmt->rowCount() > 0) {
+            // Création d'un tableau pour stocker les utilisateurs
             $usersArray = array();
-    
-            // Recorrer los resultados y añadirlos al array
+
+            // Parcours des résultats et ajout dans le tableau
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 extract($row);
-    
+
                 $userItem = array(
                     "id" => $id,
                     "user_name" => $user_name,
@@ -159,24 +130,30 @@ class User {
                     "lname" => $lname,
                     "role_id" => $role_id
                 );
-    
+
                 array_push($usersArray, $userItem);
             }
-    
+
             return $usersArray;
         } else {
-            // No se encontraron usuarios
-            return "No users found.";
+            // Aucun utilisateur trouvé
+            return "Aucun utilisateur trouvé.";
         }
     }
 
-    public function findByEmail($email) {
+    public function findByEmail($email)
+    {
+        // Préparation de la requête pour trouver un utilisateur par email
         $query = "SELECT * FROM " . $this->table_name . " WHERE email = :email LIMIT 1";
 
+        // Préparation de l'instruction
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(":email", $email);
+
+        // Exécution de la requête
         $stmt->execute();
 
+        // Récupération de l'utilisateur si trouvé
         if ($stmt->rowCount() > 0) {
             return $stmt->fetch(PDO::FETCH_ASSOC);
         } else {
@@ -184,19 +161,21 @@ class User {
         }
     }
 
-    public function getUserByUsername($username) {
+    public function getUserByUsername($username)
+    {
+        // Préparation de la requête pour trouver un utilisateur par nom d'utilisateur
         $query = "SELECT * FROM `user` WHERE `user_name` = :username";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':username', $username, PDO::PARAM_STR);
+
+        // Exécution de la requête
         $stmt->execute();
-    
+
+        // Récupération de l'utilisateur si trouvé
         if ($stmt->rowCount() > 0) {
             return $stmt->fetch(PDO::FETCH_ASSOC);
         } else {
             return null;
         }
     }
-    
-    
-    
 }

@@ -67,6 +67,12 @@ VALUES ('client', 'client@example.com', '$2y$10$WvUt5YLCr9E6H/sbCdtemeyfdK0xKdxd
 -- Insert items by default
 INSERT INTO `product` (`name`, `quantity`, `price`, `img_url`, `description`, `img_path`)
 VALUES 
-  ('Product 1', 50, 19.99, '/public/img/product1.png', 'Description Product 1', '/public/img/product1.png'),
-  ('Product 2', 30, 29.99, '/public/img/product2.jpg', 'Description Product 2', '/public/img/product2.jpg'),
-  ('Product 3', 20, 39.99, '/public/img/product3.jpg', 'Description Product 3', '/public/img/product3.jpg');
+  ('Arbre à chat', 100, 49.99, '/public/img/Arbre Chat.jpg', 'Structure verticale pour grimper, se percher et aiguiser les griffes.', '/public/img/Arbre Chat.jpg'),
+  ('Chaton', 50, 19.99, '/public/img/Chaton.jpg', 'Jeune chat nécessitant des soins spéciaux et une alimentation adaptée.', '/public/img/Chaton.jpg'),
+  ('Chiot', 50, 19.99, '/public/img/Chiot.jpg', 'Jeune chien joueur nécessitant éducation précoce et vaccinations.', '/public/img/Chiot.jpg'),
+  ('Éliminateur d''odeur', 150, 9.99, '/public/img/Eliminateur Odeur.jpg', 'Produit pour neutraliser les mauvaises odeurs à la maison.', '/public/img/Eliminateur Odeur.jpg'),
+  ('Litière', 200, 14.99, '/public/img/Litiere.jpg', 'Matériau absorbant pour le bac à litière des chats.', '/public/img/Litiere.jpg'),
+  ('Tapis pour chats', 100, 24.99, '/public/img/Tapis Chats.jpg', 'Tapis conçu pour le jeu et l''aiguisage des griffes des chats.', '/public/img/Tapis Chats.jpg'),
+  ('Mur pour chats', 50, 59.99, '/public/img/Mur Chats.jpg', 'Installation murale pour grimper et se détendre en hauteur.', '/public/img/Mur Chats.jpg'),
+  ('Nourriture pour chiens', 200, 29.99, '/public/img/Nourriture Chiens.jpg', 'Aliment formulé pour les besoins nutritionnels des chiens.', '/public/img/Nourriture Chiens.jpg'),
+  ('Shampoing', 150, 12.99, '/public/img/Shampoing.jpg', 'Produit de toilettage pour nettoyer le pelage des animaux.', '/public/img/Shampoing.jpg');
